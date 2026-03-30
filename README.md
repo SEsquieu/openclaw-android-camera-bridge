@@ -87,6 +87,21 @@ analysisMode: "ollama"
 ```
 This keeps the entire pipeline local and avoids provider-backed image analysis.
 
+Behind the scenes, the plugin reads the staged image from disk, base64-encodes it, and sends it to your local Ollama API with an HTTP `POST` to `/api/generate`.
+
+The request shape looks like this:
+
+```json
+{
+  "model": "qwen3.5:4b",
+  "prompt": "Describe what is visible in this image in plain language. Be direct and concrete.",
+  "images": ["<base64-image>"],
+  "stream": false
+}
+```
+
+So `ollamaModel: "qwen3.5:4b"` in the example config is simply the model name the plugin passes to Ollama. It is not hardcoded behavior. You can replace it with any local Ollama model on your machine that supports vision/image input.
+
 ---
 
 ## Requirements
@@ -128,8 +143,10 @@ plugins: {
         workspaceImagesDir: "images",
         defaultAnalyze: true,
         latestFileName: "latest",
+        // Optional if OpenClaw is already on PATH for the Gateway process
         openclawBin: "C:\\path\\to\\openclaw.cmd",
         ollamaBaseUrl: "http://127.0.0.1:11434",
+        // Any local Ollama model that supports image input
         ollamaModel: "qwen3.5:4b"
       }
     }
@@ -141,9 +158,7 @@ agents: {
     {
       id: "main",
       tools: {
-        profile: "coding",
-        alsoAllow: ["nodes", "android_camera_bridge", "group:fs"],
-        deny: ["subagents"]
+        alsoAllow: ["android_camera_bridge"]
       },
       skills: ["android-camera-bridge"]
     }
