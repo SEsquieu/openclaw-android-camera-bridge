@@ -1,0 +1,71 @@
+{
+  "id": "android-camera-bridge",
+  "name": "Android Camera Bridge",
+  "description": "Android-only OpenClaw camera bridge that wraps the CLI helper, stages fresh captures into the default agent workspace, and optionally returns a vision summary.",
+  "version": "0.1.0",
+  "skills": ["./skills"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "defaultNode": {
+        "type": "string",
+        "description": "Default paired Android node name or id."
+      },
+      "tempSubdir": {
+        "type": "string",
+        "description": "Temp subdirectory under the OS temp root where OpenClaw camera helper files land.",
+        "default": "openclaw"
+      },
+      "workspaceImagesDir": {
+        "type": "string",
+        "description": "Workspace-relative folder where staged captures are copied.",
+        "default": "images"
+      },
+      "openclawBin": {
+        "type": "string",
+        "description": "Optional explicit path to the OpenClaw CLI binary. If omitted, the plugin tries the OpenClaw CLI on PATH."
+      },
+      "defaultAnalyze": {
+        "type": "boolean",
+        "description": "Whether the tool should run image analysis on the staged image by default.",
+        "default": true
+      },
+      "defaultMaxWidth": {
+        "type": "integer",
+        "minimum": 1,
+        "description": "Optional default max-width passed to the camera helper."
+      },
+      "defaultQuality": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 1,
+        "description": "Optional default JPEG quality passed to the camera helper."
+      },
+      "defaultDelayMs": {
+        "type": "integer",
+        "minimum": 0,
+        "description": "Optional default delay passed to the camera helper before capture."
+      },
+      "latestFileName": {
+        "type": "string",
+        "description": "Base file name to keep updated with the most recent capture for the chosen facing.",
+        "default": "latest"
+      },
+      "ollamaBaseUrl": {
+        "type": "string",
+        "description": "Base URL for the local Ollama API.",
+        "default": "http://127.0.0.1:11434"
+      },
+      "ollamaModel": {
+        "type": "string",
+        "description": "Ollama vision-capable model to use for local image analysis.",
+        "default": "qwen3.5:4b"
+      },
+      "ollamaPrompt": {
+        "type": "string",
+        "description": "Default prompt for local Ollama image analysis."
+      }
+    }
+  }
+}

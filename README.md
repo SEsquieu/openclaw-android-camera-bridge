@@ -1,0 +1,194 @@
+# Android Camera Bridge for OpenClaw
+
+Turn “take a picture” into a one-shot, deterministic action for OpenClaw agents.
+
+Android-only OpenClaw plugin that replaces fragile phone-camera orchestration with a single stable capability.
+
+---
+
+## Example
+
+User:
+"take a picture"
+
+Agent:
+→ captures from Android device
+→ stages image in workspace
+→ returns result
+
+No retries. No drift. No JSON wrangling.
+
+---
+
+## Why this exists
+
+Small local models were getting crushed by raw tool choreography:
+
+* wrong node/action formatting
+* retry drift
+* blocked media payloads from the gateway path
+* no clean handoff from temp capture → workspace image
+
+This plugin fixes that by removing the complexity entirely.
+
+Instead of forcing the model to orchestrate multiple steps, it exposes a single stable capability.
+
+---
+
+## What it does
+
+`android_camera_bridge`:
+
+1. calls the working OpenClaw Android camera helper
+2. finds the fresh image in the OpenClaw temp folder
+3. copies it into the agent workspace `images/` folder
+4. maintains:
+
+   * archived captures
+   * rolling `latest-<facing>` file
+5. optionally runs image analysis
+
+---
+
+## Architecture
+
+camera → temp → workspace → (optional) analysis
+
+All low-level orchestration is handled inside the plugin.
+The agent only sees a single tool.
+
+---
+
+## Tool
+
+* Plugin id: `android-camera-bridge`
+* Tool name: `android_camera_bridge`
+
+---
+
+## Parameters
+
+* `node` — optional Android node name or id
+* `facing` — `front` or `back`
+* `analyze` — run image analysis
+* `analysisMode` — `ollama`, `openclaw`, or `none`
+* `prompt` — override prompt for local analysis
+* `maxWidth` — optional helper max width
+* `quality` — optional JPEG quality
+* `delayMs` — optional capture delay
+
+---
+
+## Recommended mode
+
+For a fully local setup:
+```text
+analysisMode: "ollama"
+```
+This keeps the entire pipeline local and avoids provider-backed image analysis.
+
+---
+
+## Requirements
+
+This plugin assumes OpenClaw camera prerequisites are already satisfied:
+
+* OpenClaw installed + Gateway running
+* OpenClaw CLI available on PATH (or `openclawBin` set)
+* Android node paired and reachable
+* Android app has camera permission
+* Android app is in foreground during capture
+* Workspace is configured and writable
+
+If those are true, this should work without machine-specific hacks.
+
+---
+
+## Install
+
+```
+npm install
+npm run build
+openclaw plugins install -l .
+openclaw gateway restart
+```
+---
+
+## Example config
+
+```json5
+plugins: {
+  allow: ["android-camera-bridge"],
+  entries: {
+    "android-camera-bridge": {
+      enabled: true,
+      config: {
+        defaultNode: "paired-android-node",
+        tempSubdir: "openclaw",
+        workspaceImagesDir: "images",
+        defaultAnalyze: true,
+        latestFileName: "latest",
+        openclawBin: "C:\\path\\to\\openclaw.cmd",
+        ollamaBaseUrl: "http://127.0.0.1:11434",
+        ollamaModel: "qwen3.5:4b"
+      }
+    }
+  }
+}
+
+agents: {
+  list: [
+    {
+      id: "main",
+      tools: {
+        profile: "coding",
+        alsoAllow: ["nodes", "android_camera_bridge", "group:fs"],
+        deny: ["subagents"]
+      },
+      skills: ["android-camera-bridge"]
+    }
+  ]
+}
+```
+
+---
+
+## Usage
+
+Natural language:
+```text
+Take a picture with the android bridge.
+```
+Direct:
+```text
+Use android_camera_bridge to take a photo and describe it.
+```
+Capture only:
+```text
+Use android_camera_bridge with analyze false to take a photo.
+```
+---
+
+## Limitations
+
+* Android-only
+* Requires foreground Android app for capture
+* Image analysis depends on local model / provider setup
+
+---
+
+## Notes
+
+* Designed to narrow the model-facing tool surface
+* Great fit for smaller local / edge models
+* Can use OpenClaw media understanding (`analysisMode: "openclaw"`) or fully local Ollama
+* Wraps the documented `openclaw nodes camera snap` CLI helper
+* Uses the `MEDIA:<path>` temp-file output from OpenClaw
+
+---
+
+## Takeaway
+
+If your model is struggling, it’s probably doing work it shouldn’t be doing.
+
+Give it better primitives — it suddenly looks a lot smarter.
