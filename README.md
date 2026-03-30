@@ -6,6 +6,50 @@ Android-only OpenClaw plugin that replaces fragile phone-camera orchestration wi
 
 ---
 
+## Install
+
+### 1. Install the plugin locally
+
+```powershell
+npm install
+npm run build
+openclaw plugins install -l .
+openclaw gateway restart
+```
+
+### 2. Allow the tool
+
+You can do this either in config or from the local web dashboard.
+
+Config example:
+
+```json5
+agents: {
+  list: [
+    {
+      id: "main",
+      tools: {
+        alsoAllow: ["android_camera_bridge"]
+      },
+      skills: ["android-camera-bridge"]
+    }
+  ]
+}
+```
+
+Local web dashboard path:
+
+1. Open the local OpenClaw dashboard.
+2. Go to `AI & Agents`.
+3. Open the `Tools` tab.
+4. Under `Tool Allowlist Additions`, click `Add`.
+5. Add `android_camera_bridge` in the `access > tools` entry.
+6. Click `Save`, then `Update`.
+
+This updates the backend config from the dashboard UI.
+
+---
+
 ## Example
 
 User:
@@ -117,16 +161,6 @@ This plugin assumes OpenClaw camera prerequisites are already satisfied:
 
 If those are true, this should work without machine-specific hacks.
 
----
-
-## Install
-
-```
-npm install
-npm run build
-openclaw plugins install -l .
-openclaw gateway restart
-```
 ---
 
 ## Example config
