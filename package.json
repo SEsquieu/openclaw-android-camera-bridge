@@ -1,6 +1,6 @@
 {
   "name": "openclaw-android-camera-bridge",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Android-only OpenClaw camera bridge plugin for capture, staging, and optional image analysis.",
   "license": "MIT",
   "type": "module",
@@ -22,10 +22,10 @@
   "openclaw": {
     "extensions": ["./dist/index.js"],
     "compat": {
-      "pluginApi": "0.1.0"
+      "pluginApi": "2026.3.31"
     },
     "build": {
-      "openclawVersion": "2026.3.28"
+      "openclawVersion": "2026.3.31"
     }
   },
   "dependencies": {
