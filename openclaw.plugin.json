@@ -2,7 +2,7 @@
   "id": "android-camera-bridge",
   "name": "Android Camera Bridge",
   "description": "Android-only OpenClaw camera bridge that wraps the CLI helper, stages fresh captures into the default agent workspace, and optionally returns a vision summary.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "skills": ["./skills"],
   "configSchema": {
     "type": "object",

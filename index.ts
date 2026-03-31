@@ -301,7 +301,7 @@ async function runOpenClawCameraHelper(input: {
 
   for (const bin of bins) {
     try {
-      const result = await input.runtime.system.runCommandWithTimeout(bin, args, {
+      const result = await input.runtime.system.runCommandWithTimeout([bin, ...args], {
         timeoutMs: 30000,
       });
 
