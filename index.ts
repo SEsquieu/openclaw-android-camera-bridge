@@ -53,6 +53,12 @@ type ToolDetails = {
   analysisMode: "openclaw" | "ollama" | "none";
   analysisState: string;
   analysisText: string;
+  timings: {
+    totalMs: number;
+    captureMs: number;
+    stageMs: number;
+    analysisMs: number;
+  };
 };
 
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
@@ -169,6 +175,7 @@ export default definePluginEntry({
             facing,
             options: helperOptions,
           });
+          const captureEndedAt = Date.now();
 
           const helperMedia = await parseMediaPathsFromStdout(helperResult.stdout);
           const selectedSource = await resolveFreshSourceImage({
@@ -183,6 +190,7 @@ export default definePluginEntry({
             facing,
             latestFileNameBase: pluginCfg.latestFileName ?? "latest",
           });
+          const stageEndedAt = Date.now();
 
           let analysis: MediaDescription;
           let analysisState = analysisMode === "none" ? "skipped" : "not-run";
@@ -221,6 +229,14 @@ export default definePluginEntry({
             }
           }
 
+          const analysisEndedAt = Date.now();
+          const timings = {
+            totalMs: analysisEndedAt - startedAt,
+            captureMs: captureEndedAt - startedAt,
+            stageMs: stageEndedAt - captureEndedAt,
+            analysisMs: analysisEndedAt - stageEndedAt,
+          };
+
           const analysisText = analysis?.text?.trim() || "";
           const summary = [
             `android_camera_bridge capture succeeded.`,
@@ -231,6 +247,7 @@ export default definePluginEntry({
             `Workspace latest: ${staged.latestPath}`,
             `Analysis mode: ${analysisMode}`,
             `Analysis state: ${analysisState}`,
+            `Timings: total=${timings.totalMs}ms capture=${timings.captureMs}ms stage=${timings.stageMs}ms analysis=${timings.analysisMs}ms`,
             analysisMode === "none"
               ? `Vision summary: skipped (analyze=false or analysisMode=none)`
               : `Vision summary: ${analysisText || "(no description returned)"}`,
@@ -248,6 +265,7 @@ export default definePluginEntry({
             analysisMode,
             analysisState,
             analysisText,
+            timings,
           };
 
           return {
