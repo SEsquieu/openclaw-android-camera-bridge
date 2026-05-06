@@ -20,7 +20,7 @@ Rules:
   - `analysisMode`: `ollama`, `openclaw`, or `none`
 - Defaults:
   - `facing=back`
-  - `analysisMode=ollama`
+  - `analysisMode` follows plugin config; Seth's local config defaults to `openclaw`
 
 Prerequisites:
 - A paired Android node must already exist and be reachable.

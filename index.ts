@@ -13,6 +13,7 @@ type PluginConfig = {
   workspaceImagesDir?: string;
   openclawBin?: string;
   defaultAnalyze?: boolean;
+  defaultAnalysisMode?: "openclaw" | "ollama" | "none";
   defaultMaxWidth?: number;
   defaultQuality?: number;
   defaultDelayMs?: number;
@@ -154,7 +155,7 @@ export default definePluginEntry({
           const node = params.node ?? pluginCfg.defaultNode ?? "paired-android-node";
           const facing: Facing = params.facing ?? "back";
           const analyze = params.analyze ?? pluginCfg.defaultAnalyze ?? true;
-          const requestedMode = params.analysisMode ?? "ollama";
+          const requestedMode = params.analysisMode ?? pluginCfg.defaultAnalysisMode ?? "ollama";
           const analysisMode: "openclaw" | "ollama" | "none" = analyze ? requestedMode : "none";
 
           const helperOptions = {

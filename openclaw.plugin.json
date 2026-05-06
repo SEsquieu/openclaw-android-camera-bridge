@@ -4,6 +4,17 @@
   "description": "Android-only OpenClaw camera bridge that wraps the CLI helper, stages fresh captures into the default agent workspace, and optionally returns a vision summary.",
   "version": "0.1.3",
   "skills": ["./skills"],
+  "contracts": {
+    "tools": ["android_camera_bridge"]
+  },
+  "toolMetadata": {
+    "android_camera_bridge": {
+      "optional": true
+    }
+  },
+  "activation": {
+    "onStartup": true
+  },
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
@@ -30,6 +41,12 @@
         "type": "boolean",
         "description": "Whether the tool should run image analysis on the staged image by default.",
         "default": true
+      },
+      "defaultAnalysisMode": {
+        "type": "string",
+        "enum": ["openclaw", "ollama", "none"],
+        "description": "Default analysis backend when the tool call does not specify analysisMode.",
+        "default": "ollama"
       },
       "defaultMaxWidth": {
         "type": "integer",
